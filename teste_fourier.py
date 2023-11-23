@@ -41,20 +41,8 @@ class audio:
 class plot(audio):
     '''
     Essa classe visa a criação dos gráficos do áudio original e da transformada de Fourrier realizada.
+    A herança foi utilizada a priori, mas não foi 100% aproveitada.
     '''
-
-    def plot_audio(self):
-        audio_file = wave.open(self.audiopath, 'rb')
-        frames = self.audio_file.readframes(-1)
-        signal = np.frombuffer(frames, dtype='int16')
-
-        plt.figure(figsize=(8, 6))
-        plt.imshow(signal.reshape(-1, 1).T, aspect='auto', cmap='viridis')
-        plt.xlabel('Time')
-        plt.ylabel('Magnitude')
-        plt.title('Audio Signal')
-        plt.colorbar(label='Amplitude')
-        plt.show()
 
     def plot_fft(self):
         audio_file = wave.open(self.audiopath, 'rb')
@@ -68,9 +56,38 @@ class plot(audio):
         plt.title('Fourier Transform')
         plt.show()
 
+    #TODO: Fazer o áudio ficar visível
+    def plot_audio(self):
+        audio_file = wave.open(self.audiopath, 'rb')
+        frames = self.audio_file.readframes(-1)
+        signal = np.frombuffer(frames, dtype='int16')
+
+        plt.figure(figsize=(8, 6))
+        plt.imshow(signal.reshape(-1, 1).T, aspect='auto', cmap='viridis')
+        plt.xlabel('Time')
+        plt.ylabel('Magnitude')
+        plt.title('Audio Signal')
+        plt.colorbar(label='Amplitude')
+        plt.show()
+
+
+
+class denoise(audio):
+    
+    #TODO: A partir da transformada de Fourier, retirar o ruído do sinal
+    def denoise(self):
+        pass
 
 
 ##################
+
+#Testando a transformada
+if __name__ == '__main__':
+    audio_path = 'teste-blastoise.wav'
+    audio_instance = audio(audio_path)
+    print(f"O nome do arquivo é: {audio_instance.file_name}")
+    print(f"Os dados são: {audio_instance.transformed_data}")
+
 
 #Testando os gráficos
 if __name__ == '__main__':
