@@ -98,10 +98,12 @@ if __name__ == '__main__':
 
 
 ################################
+
 '''
 Referências:
 https://docs.python.org/3/library/wave.html
 https://stackoverflow.com/questions/18625085/how-to-plot-a-wav-file
 
-I also used Open AI ChatGPT in order to fix some errors and to organize my code in a better way
+I used OpenAI ChatGPT to do the graphs
+I also used it in order to fix some errors and to organize my code in a better way
 '''
