@@ -45,7 +45,7 @@ class audio_denoise:
 
 
 
-audio_file = "C:/Users/pedro/PycharmProjects/pythonProject/EEL/PC/gravacao.wav"
+audio_file = "FazOL.wav"
 
 denoising = audio_denoise(audio_file)
 
