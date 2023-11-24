@@ -68,7 +68,8 @@ class denoise(audio):
     
     def calculate_noise(self, noise_psd, threshold=0.15):
         '''
-        The threshols choosen was 0.15. This may require adjustments deppending on your audio file
+        The threshols choosen was 0.15. This may require adjustments deppending on 
+        your audio file
         '''
         noise = np.where(noise_psd > threshold * np.max(noise_psd))[0]
         return noise
@@ -87,9 +88,9 @@ class denoise(audio):
 
 class plot(audio):
     '''
-    This class aims the graphs creation. It can generate the original file, its Fourier Transform, the
-    data after the filter and the denoised audio.
-    OpenAI Chat GPT was used to create some of the graphs.
+    This class aims the graphs creation. It can generate the original file, its 
+    Fourier Transform, the data after the filter and the denoised audio. OpenAI 
+    Chat GPT was used to create some of the graphs.
     '''
 
     def __init__(self, audiopath):
