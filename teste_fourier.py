@@ -39,40 +39,7 @@ class audio:
         return transformed_signal
 
 
-class plot(audio):
-    '''
-    Essa classe visa a criação dos gráficos do áudio original e da transformada de Fourrier realizada.
-    A herança foi utilizada a priori, mas não foi 100% aproveitada.
-    '''
-
-    def plot_fft(self):
-        audio_file = wave.open(self.audiopath, 'rb')
-        transformed_signal = self.transformed_data
-        freq = np.fft.fftfreq(len(transformed_signal)) * self.audio_file.getframerate()
-
-        plt.figure(figsize=(8, 6))
-        plt.plot(freq, np.abs(transformed_signal))
-        plt.xlabel('Frequency (Hz)')
-        plt.ylabel('Amplitude')
-        plt.title('Fourier Transform')
-        plt.show()
-
-    #TODO: Fazer o áudio ficar visível
-    def plot_audio(self):
-        audio_file = wave.open(self.audiopath, 'rb')
-        frames = self.audio_file.readframes(-1)
-        signal = np.frombuffer(frames, dtype='int16')
-
-        plt.figure(figsize=(8, 6))
-        plt.imshow(signal.reshape(-1, 1).T, aspect='auto', cmap='viridis')
-        plt.xlabel('Time')
-        plt.ylabel('Magnitude')
-        plt.title('Audio Signal')
-        plt.colorbar(label='Amplitude')
-        plt.show()
-
-    #TODO: Implementar o gráfico da transformada com o filtro e do áudio tratado
-
+###
 
 
 class denoise(audio):
@@ -84,9 +51,13 @@ class denoise(audio):
     '''
 
     def __init__(self, audiopath):
-        super().__init__(audiopath)
-        self.frequencies, self.psd = self.calculate_psd()
-        self.noise = self.calculate_noise(self.psd)
+        if isinstance(audiopath, str):  # Ensure 'audiopath' is a string
+            super().__init__(audiopath)
+            self.frequencies, self.psd = self.calculate_psd()
+            self.noise = self.calculate_noise(self.psd)
+        else:
+            raise ValueError("A file path string is required.")
+
 
     #Calcular o psd a ser usado no cáluclo do filtro de Wiener
     def calulate_psd(self):
@@ -107,26 +78,89 @@ class denoise(audio):
         return denoised_signal
 
 
+###
+
+
+class plot(audio):
+    '''
+    Essa classe visa a criação dos gráficos do áudio original e da transformada de Fourrier realizada.
+    '''
+
+    def __init__(self, audiopath):
+        self.audiopath = audiopath
+        self.audio_file = wave.open(self.audiopath, 'rb')
+        self.transformed_data = self.calculate_fft()
+
+    def calculate_fft(self):
+        frames = self.audio_file.readframes(-1)
+        signal = np.frombuffer(frames, dtype='int16')
+        return np.fft.fft(signal)
+
+
+    def plot_fft(self):
+        transformed_signal = self.transformed_data
+        freq = np.fft.fftfreq(len(transformed_signal)) * self.audio_file.getframerate()
+
+        plt.figure(figsize=(8, 6))
+        plt.plot(freq, np.abs(transformed_signal))
+        plt.xlabel('Frequency (Hz)')
+        plt.ylabel('Amplitude')
+        plt.title('Fourier Transform')
+        plt.show()
+
+    #TODO: Fazer o áudio ficar visível
+    def plot_audio(self):
+        frames = self.audio_file.readframes(-1)
+        signal = np.frombuffer(frames, dtype='int16')
+
+        plt.figure(figsize=(8, 6))
+        plt.imshow(signal.reshape(-1, 1).T, aspect='auto', cmap='viridis')
+        plt.xlabel('Time')
+        plt.ylabel('Magnitude')
+        plt.title('Audio Signal')
+        plt.colorbar(label='Amplitude')
+        plt.show()
+
+    #TODO: Implementar o gráfico da transformada com o filtro e do áudio tratado
+    def plot_filtered_signal(self, filtered_data):
+        plt.figure(figsize=(8, 6))
+        plt.plot(filtered_data)
+        plt.xlabel('Time')
+        plt.ylabel('Magnitude')
+        plt.title('Filtered Signal')
+        plt.show()
+
+    def plot_inverse_fft(self, denoised_signal):
+        plt.figure(figsize=(8, 6))
+        plt.plot(denoised_signal)
+        plt.xlabel('Time')
+        plt.ylabel('Magnitude')
+        plt.title('Inverse Fourier Transform')
+        plt.show()
+
+
+
+
+
 
 ##################
 
-#Testando a transformada
+
 if __name__ == '__main__':
+
+    #Testando a transformada
     audio_path = 'teste-blastoise.wav'
     audio_instance = audio(audio_path)
     print(f"O nome do arquivo é: {audio_instance.file_name}")
     print(f"Os dados são: {audio_instance.transformed_data}")
 
-
-#Testando os gráficos
-if __name__ == '__main__':
-    audio_path = 'teste-blastoise.wav'
+    #Testando os gráficos
     audio_plot = plot(audio_path)
-    audio_plot.plot_audio()
+    audio_plot.plot_audio() 
     audio_plot.plot_fft()
 
-#Testando o filtro e o cancelamento de ruído
-#TODO: implementar os testes a serem feitos
+    #TODO: testar o filtro e o cancelamento de ruído
+
 
 
 ################################
