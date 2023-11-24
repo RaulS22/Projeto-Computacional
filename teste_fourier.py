@@ -71,6 +71,8 @@ class plot(audio):
         plt.colorbar(label='Amplitude')
         plt.show()
 
+    #TODO: Implementar o gráfico da transformada com o filtro e do áudio tratado
+
 
 
 class denoise(audio):
@@ -119,6 +121,7 @@ if __name__ == '__main__':
     audio_plot.plot_fft()
 
 #Testando o filtro e o cancelamento de ruído
+#TODO: implementar os testes a serem feitos
 
 
 ################################
