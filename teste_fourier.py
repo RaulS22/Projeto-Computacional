@@ -85,21 +85,26 @@ class denoise(audio):
 
     def __init__(self, audiopath):
         super().__init__(audiopath)
+        self.frequencies, self.psd = self.calculate_psd()
+        self.noise = self.calculate_noise(self.psd)
 
     #Calcular o psd a ser usado no cáluclo do filtro de Wiener
     def calulate_psd(self):
         frequencies, psd = welch(self.transformed_data.real, fs=self.audio_file.getframerate())
         return frequencies, psd
 
-    #TODO: implementar uma função para calcular o ruído
-    def calculate_noise(self):
-        pass
+    #o threshols está ajustado em 15%
+    def calculate_noise(self, noise_psd, threshold=0.15):
+        noise = np.where(noise_psd > threshold * np.max(noise_psd))[0]
+        return noise
+        
 
     def wiener_filter(self):
         wiener_filter = self.psd / (self.psd + self.noise) #cálculo do filtro
 
         filtered_data = self.transformed_data * wiener_filter #aplicando o filtro
         denoised_signal = ifft(filtered_data) #transformada inversa
+        return denoised_signal
 
 
 
