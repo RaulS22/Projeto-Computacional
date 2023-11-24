@@ -1,4 +1,5 @@
 from scipy.fft import fft, ifft
+from scipy.signal import welch
 import wave
 import numpy as np
 import matplotlib.pyplot as plt
@@ -73,10 +74,31 @@ class plot(audio):
 
 
 class denoise(audio):
-    
-    #TODO: A partir da transformada de Fourier, retirar o ruído do sinal
-    def denoise(self):
+    '''
+    O que será feito nessa função, será a utilização dos dados da transformada
+    de Fourier para aplicar o filtro de Wiener e depois voltar os dados para o
+    domínio do tempo. Esse filtro foi esolhido porque é o que minimiza os mínimos
+    quadrados do modelo. 
+    '''
+
+    def __init__(self, audiopath):
+        super().__init__(audiopath)
+
+    #Calcular o psd a ser usado no cáluclo do filtro de Wiener
+    def calulate_psd(self):
+        frequencies, psd = welch(self.transformed_data.real, fs=self.audio_file.getframerate())
+        return frequencies, psd
+
+    #TODO: implementar uma função para calcular o ruído
+    def calculate_noise(self):
         pass
+
+    def wiener_filter(self):
+        wiener_filter = self.psd / (self.psd + self.noise) #cálculo do filtro
+
+        filtered_data = self.transformed_data * wiener_filter #aplicando o filtro
+        denoised_signal = ifft(filtered_data) #transformada inversa
+
 
 
 ##################
@@ -96,6 +118,8 @@ if __name__ == '__main__':
     audio_plot.plot_audio()
     audio_plot.plot_fft()
 
+#Testando o filtro e o cancelamento de ruído
+
 
 ################################
 
@@ -103,6 +127,8 @@ if __name__ == '__main__':
 Referências:
 https://docs.python.org/3/library/wave.html
 https://stackoverflow.com/questions/18625085/how-to-plot-a-wav-file
+https://ocw.mit.edu/courses/6-011-introduction-to-communication-control-and-signal-processing-spring-2010/f135b328c7448bf21c4939ea9ff8f8fb_MIT6_011S10_chap11.pdf
+
 
 I used OpenAI ChatGPT to do the graphs
 I also used it in order to fix some errors and to organize my code in a better way
