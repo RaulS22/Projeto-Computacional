@@ -122,21 +122,6 @@ class plot(audio):
         plt.show()
 
     #TODO: Implementar o gráfico da transformada com o filtro e do áudio tratado
-    def plot_filtered_signal(self, filtered_data):
-        plt.figure(figsize=(8, 6))
-        plt.plot(filtered_data)
-        plt.xlabel('Time')
-        plt.ylabel('Magnitude')
-        plt.title('Filtered Signal')
-        plt.show()
-
-    def plot_inverse_fft(self, denoised_signal):
-        plt.figure(figsize=(8, 6))
-        plt.plot(denoised_signal)
-        plt.xlabel('Time')
-        plt.ylabel('Magnitude')
-        plt.title('Inverse Fourier Transform')
-        plt.show()
 
 
 
