@@ -13,29 +13,32 @@ class audio:
         gerar um nome usando manipulação de strings, abrir o arquivo de áudio
         e chamar a transformada de Fourier
         '''
-
-        self.audiopath = audiopath #caminho do áudio
-        self.file_name = audiopath[audiopath.rfind('/') + 1:audiopath.rfind('.')] #gera um nome usando manipulação de string
-        self.open_audio() #abre o arquivo de áudio
-        self.transformed_data = self.calculate_fourier()  #chama a transformada logo na initialização
-        #new_name = 'fourier_' + self.file_name #definindo um novo nome
+        if isinstance(audiopath, str):
+            self.audiopath = audiopath #audio path
+            self.file_name = audiopath[audiopath.rfind('/') + 1:audiopath.rfind('.')] #generates a name using string manipulation
+            self.open_audio() #opens the audio file
+            self.transformed_data = self.calculate_fourier()  #call the transform at the init
+            
+            #new_name = 'fourier_' + self.file_name #definindo um novo nome
+        else:
+            raise ValueError("A file path string is required.")
 
     def open_audio(self):
         '''
-        Arquivo criado na forma "wave_write"
+        File created at the "wave_write" mode
         '''
 
         self.audio_file = wave.open(self.audiopath, 'rb') 
 
     def calculate_fourier(self):
         '''
-        Primeiro o arquivo é lido e convertido para um array do numpy
-        Após isso, a transformada de fourrier é feita usando scipy
+        First, the file is read and converted to an numpy array
+        After it, a Fourier transform is done using Scipy
         '''
 
-        frames = self.audio_file.readframes(-1) #lê o arquivo
-        signal = np.frombuffer(frames, dtype='int16') #gera um array do numpy
-        transformed_signal = fft(signal) #transformada usando o scipy
+        frames = self.audio_file.readframes(-1) #reads the file
+        signal = np.frombuffer(frames, dtype='int16') #generates an numpy array
+        transformed_signal = fft(signal) #Fourier transform using scipy
         return transformed_signal
 
 
@@ -44,37 +47,38 @@ class audio:
 
 class denoise(audio):
     '''
-    O que será feito nessa função, será a utilização dos dados da transformada
-    de Fourier para aplicar o filtro de Wiener e depois voltar os dados para o
-    domínio do tempo. Esse filtro foi esolhido porque é o que minimiza os mínimos
-    quadrados do modelo. 
+    What is being done in this function is the use of the Fourier Transform data
+    to apply the Wiener filter and, after it, apply the Inverse Fourier Transform
+    to return the data to the time domain. This filter was choosen because it is
+    the method that minimizes the mean square error of the model.
     '''
 
     def __init__(self, audiopath):
-        if isinstance(audiopath, str):  # Ensure 'audiopath' is a string
-            super().__init__(audiopath)
-            self.frequencies, self.psd = self.calculate_psd()
-            self.noise = self.calculate_noise(self.psd)
-        else:
-            raise ValueError("A file path string is required.")
+        super().__init__(audiopath)
+        self.frequencies, self.psd = self.calculate_psd()
+        self.noise = self.calculate_noise(self.psd)
+        
 
 
-    #Calcular o psd a ser usado no cáluclo do filtro de Wiener
+    #Calculates the psd to be used at the Wiener filter calculus
     def calulate_psd(self):
         frequencies, psd = welch(self.transformed_data.real, fs=self.audio_file.getframerate())
         return frequencies, psd
 
-    #o threshols está ajustado em 15%
+    
     def calculate_noise(self, noise_psd, threshold=0.15):
+        '''
+        The threshols choosen was 0.15. This may require adjustments deppending on your audio file
+        '''
         noise = np.where(noise_psd > threshold * np.max(noise_psd))[0]
         return noise
         
 
     def wiener_filter(self):
-        wiener_filter = self.psd / (self.psd + self.noise) #cálculo do filtro
+        wiener_filter = self.psd / (self.psd + self.noise) #Wiener filter calculus
 
-        filtered_data = self.transformed_data * wiener_filter #aplicando o filtro
-        denoised_signal = ifft(filtered_data) #transformada inversa
+        filtered_data = self.transformed_data * wiener_filter #applying the filter
+        denoised_signal = ifft(filtered_data) #invese fourier transform
         return denoised_signal
 
 
@@ -83,7 +87,9 @@ class denoise(audio):
 
 class plot(audio):
     '''
-    Essa classe visa a criação dos gráficos do áudio original e da transformada de Fourrier realizada.
+    This class aims the graphs creation. It can generate the original file, its Fourier Transform, the
+    data after the filter and the denoised audio.
+    OpenAI Chat GPT was used to create some of the graphs.
     '''
 
     def __init__(self, audiopath):
@@ -127,9 +133,7 @@ class plot(audio):
 
 
 
-
-##################
-
+################################
 
 if __name__ == '__main__':
 
@@ -145,7 +149,6 @@ if __name__ == '__main__':
     audio_plot.plot_fft()
 
     #TODO: testar o filtro e o cancelamento de ruído
-
 
 
 ################################
