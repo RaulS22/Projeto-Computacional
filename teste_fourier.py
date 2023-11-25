@@ -1,5 +1,6 @@
 from scipy.fft import fft, ifft
 from scipy.signal import welch
+from scipy import signal
 import wave
 import numpy as np
 import matplotlib.pyplot as plt
@@ -61,11 +62,16 @@ class denoise(audio):
 
 
     #Calculates the psd to be used at the Wiener filter calculus
-    def calulate_psd(self):
+    def calculate_psd(self):
         frequencies, psd = welch(self.transformed_data.real, fs=self.audio_file.getframerate())
         return frequencies, psd
 
-    
+    #nsd -> noise spectral density
+    def calculate_nsd(self):
+        frequencies, noise_psd = signal.periodogram(self.transformed_data.real, fs=self.audio_file.getframerate())
+        return noise_psd
+
+
     def calculate_noise(self, noise_psd, threshold=0.15):
         '''
         The threshols choosen was 0.15. This may require adjustments deppending on 
@@ -73,6 +79,7 @@ class denoise(audio):
         '''
         noise = np.where(noise_psd > threshold * np.max(noise_psd))[0]
         return noise
+    
         
 
     def wiener_filter(self):
@@ -81,6 +88,8 @@ class denoise(audio):
         filtered_data = self.transformed_data * wiener_filter #applying the filter
         denoised_signal = ifft(filtered_data) #invese fourier transform
         return denoised_signal
+    
+    
 
 
 ###
@@ -129,6 +138,7 @@ class plot(audio):
         plt.show()
 
     #TODO: Implementar o gráfico da transformada com o filtro e do áudio tratado
+    
 
 
 
@@ -150,6 +160,8 @@ if __name__ == '__main__':
     audio_plot.plot_fft()
 
     #TODO: testar o filtro e o cancelamento de ruído
+    
+
 
 
 ################################
