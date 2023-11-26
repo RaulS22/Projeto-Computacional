@@ -47,7 +47,8 @@ class data_denoise():
         if type(self.noise) != bool:
             self.denoised_signal = nr.reduce_noise(y=self.y, sr=self.sr, y_noise=self.noise)
         # Apply noise reduction with estimated noise profile
-        self.denoised_signal = nr.reduce_noise(y=self.y, sr=self.sr)
+        else:
+            self.denoised_signal = nr.reduce_noise(y=self.y, sr=self.sr)
         self.transform = 'nr_'
 
     # Testing function to check if the usage of different natured libraries (librosa for loading and scipy.io.wavfile for writing) 
@@ -123,9 +124,10 @@ class audio_denoise(data_denoise):
 
 
 if __name__ == '__main__':
-    audio_file = 'sem-título.wav'
+    audio_file = 'teste-blastoise.wav'
+    denoising = audio_denoise(audio_file)
 
-    denoising = audio_denoise(audio_file, 'sem-título-noise.wav')
+    #denoising = audio_denoise(audio_file, 'teste-blastoise-noise.wav')
     y = denoising.y
     x = denoising.time
     noise = denoising.noise
