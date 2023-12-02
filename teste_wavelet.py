@@ -127,7 +127,5 @@ if __name__ == '__main__':
     audio_file = 'sample-1.wav'
     denoising = audio_denoise(audio_file)
 
-    denoising = audio_denoise(audio_file, 'noise-sample-1.wav')
-    y = denoising.y
-    x = denoising.time
-    noise = denoising.noise
+    denoising.noise_reduce()
+    denoising.audio_write()
