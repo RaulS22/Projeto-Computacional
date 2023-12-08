@@ -8,6 +8,14 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+matplotlib = "^3.8.2"
+scipy = "^1.11.4"
+wave = "^0.0.2"
+librosa = "^0.10.1"
+noisereduce = "^3.0.0"
+pandas = "^2.1.4"
+plotly = "^5.18.0"
+pywavelets = "^1.5.0"
 
 [tool.poetry.dev-dependencies]
 
