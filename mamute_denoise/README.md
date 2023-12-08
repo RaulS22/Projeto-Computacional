@@ -18,7 +18,7 @@ Interested in contributing? Check out the contributing guidelines. Please note t
 
 ## License
 
-`mamute_denoise` was created by Isadora gomes, Pedro Lopes e Raul Santos. It is licensed under the terms of the MIT license.
+`mamute_denoise` was created by Isadora gomes, Pedro Lopes and Raul Santos. It is licensed under the terms of the MIT license.
 
 ## Credits
 
