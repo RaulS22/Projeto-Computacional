@@ -1,6 +1,6 @@
 # mamute_denoise
 
-files or remove it (using FFT or Wavelet transform)
+This package can be used to handle audio files. It can either add noise (using add_noise) or remove it (using FFT or Wavelet transform).
 
 ## Installation
 
