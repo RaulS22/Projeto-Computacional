@@ -8,8 +8,7 @@ import pandas as pd
 from scipy.io import wavfile
 from scipy.fft import fft, ifft
 from scipy.signal import welch, wiener
-from scipy import signal
-import wave
+
 
 class data_denoise():
     
