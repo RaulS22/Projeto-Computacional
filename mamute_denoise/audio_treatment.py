@@ -115,10 +115,7 @@ class data_denoise():
 
         y = self.y      # Necessary lines to make the calculations to retrieve information on the signs of
                         # the amplitude values of the original signal.
-        try:            # Getting rid of possible 0/0 indeterminations
-            y[y == 0] = 1
-        except:
-            pass           
+        y[y == 0] = 1   # Getting rid of possible 0/0 indeterminations 
         amplitude_signs = y / abs(self.y) # Retrieving the amplitude signs
 
         self.denoised_signal = denoised_abs_signal*amplitude_signs # Applying respective positive and negative signs on the filtered signal's
