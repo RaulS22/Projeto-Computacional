@@ -36,7 +36,7 @@ class data_denoise():
         self.transform = 'none_' # Start the used transform name to name the output file later on
         self.file_name = 'data' # Start file name in case of usage of the audio_write func
 
-        # If a noise file path is provided, save its floating points to a noise variable (applies to noise_reduce() function)
+        # If a noise file path is provided, save its floating points to a noise variable (this applies to the noise_reduce() function)
         if type(noise_data) != bool:
             self.noise = np.array(noise_data).astype(float)
         else:
@@ -45,13 +45,28 @@ class data_denoise():
     
     def wavelet_transform_1D(self, threshold, wavelet='db1', mode ='sym', level=None):
         '''
-        Performs a 1 dimension wavelet transform with standard parameters if none are indicated
+        Performs a 1 dimension multilevel wavelet transform with standard parameters if none are indicated,
+        decomposing the signal, filtering and reconstructing it.
 
         Parameters:
+        - threshold: signal intensity filtering threshold; atenuates lower intensity signal bits
+        over wavelet's transform time windows, highlighting peak values.
 
+        - wavelet: sets which wavelet is used to decompose the signal (wavelet standard used if none are provided: 'db1').
+        Different wavelets can be used in signal decomposition and the PyWavelets package docs wields
+        more information on all the wavelets available and its respective string codes (type pywt.wavelist or check https://pywavelets.readthedocs.io/en/latest/ref/wavelets.html).
+
+        - mode: reffers to the extrapolation mathematical tool for signal extension (standard: 'sym', short term for symmetric)
+        Different extrapolations can perform different kinds of artifacts in the ends of the signal,
+        see PyWavelt documentation for more information (https://pywavelets.readthedocs.io/en/latest/ref/signal-extension-modes.html#ref-modes).
+
+        - level: reffers to the level of the multilevel transform, if none are provided it is calculated using dwt_max_level.
 
         Returns: 
-        -
+
+        - self.denoised_signal: after the signal in decomposed and filtered, it is reconstructed to a denoised version.
+        
+        (check PyWavelets Multilevel DWT docs)
         '''
         self.transform = 'wavelet_' # Used transform identifier
         coeffs = pywt.wavedec(self.y, wavelet, mode=mode, level=level)
@@ -63,7 +78,7 @@ class data_denoise():
         '''
         Uses de reduce_noise function from the noisereduce lib. It can either
         apply noise reduction from noise file (if provided) or apply noise 
-        reduction with estimated noise profile
+        reduction with estimated noise profile.
 
         Parameters:
 
@@ -89,21 +104,38 @@ class data_denoise():
         '''
 
         self.transform = 'fourier_'
-        transformed_signal = fft(self.y)
-        filtered_data = wiener(transformed_signal)
-        self.denoised_signal = ifft(filtered_data)
+        transformed_signal = fft(self.y) # Performs FFT on the original signal
 
-    
-    #TODO: test it
+        abs_t_sig = abs(transformed_signal) # Gets absolute values of frequency amplitudes
+        filtered_data = wiener(abs_t_sig) # Performs a Wiener filter on the absolute values
+        filtering_weights = filtered_data / abs_t_sig # Gets the weights applied to each floating point on the wiener filter
+        filtered_signal = filtering_weights*transformed_signal # Applies the weights on the complex amplitudes
+        denoised_abs_signal = abs(ifft(filtered_signal)) # Performs and IFFT on the filtered signal, which returns complex values
+        #                                                  due to approximations and filtering made before, and extract it's absolute values
+
+        y = self.y      # Necessary lines to make the calculations to retrieve information on the signs of
+                        # the amplitude values of the original signal.
+        try:            # Getting rid of possible 0/0 indeterminations
+            y[y == 0] = 1
+        except:
+            pass           
+        amplitude_signs = y / abs(self.y) # Retrieving the amplitude signs
+
+        self.denoised_signal = denoised_abs_signal*amplitude_signs # Applying respective positive and negative signs on the filtered signal's
+                                                                   # complex "floating" points absolute values to retrieve oscilations
+        
+        self.denoised_signal = np.float32(self.denoised_signal) # Formmating the denoised signal to float32 dtype for compatilibity with the
+                                                                # audio_write function.
+
     def plot_denoising(self, comp=True, sep=False):
         '''
         Plots three figures: one with the comparassion of original and denoised data, the other
         only with the original data and the last one with the denoised data.
 
         Parameters: comp: bool
-                        If  comp == True, the comparassion image will be ploted
+                        If  comp == True, the comparison image will be ploted
                     sep: bool
-                        If  comp == True, both the original and the denoised image will be ploted
+                        If  sep == True, both the original and the denoised image will be ploted
 
         Returns:
             Figures
@@ -193,5 +225,12 @@ class audio_denoise(data_denoise):
         
         output_file = self.transform + self.file_name + ".wav" # Name the file with it's extension
         wavfile.write(output_file, int(self.sr), self.denoised_signal) # Writes file with the output_file name
+
+if __name__ == "__main__":
+    audio_file = 'noisy-sample-1.wav'
+    denoising = audio_denoise(audio_file)
+
+    denoising.fourier_transform()
+    denoising.audio_write()
 
 
