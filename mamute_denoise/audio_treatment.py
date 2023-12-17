@@ -54,11 +54,10 @@ class data_denoise():
         Returns: 
         -
         '''
-
+        self.transform = 'wavelet_' # Used transform identifier
         coeffs = pywt.wavedec(self.y, wavelet, mode=mode, level=level)
         coeffs_thresholded = [pywt.threshold(c, threshold, mode='soft') for c in coeffs] # Set a threshold to nullify smaller coefficients assumed to be noise
         self.denoised_signal = pywt.waverec(coeffs_thresholded, 'db1') # Reconstruct the signal from the thresholded coefficients
-        self.transform = 'wavelet_' # Used transform identifier
 
      
     def noise_reduce(self):
