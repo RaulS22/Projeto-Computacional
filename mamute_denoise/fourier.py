@@ -54,38 +54,10 @@ class denoise(audio):
 
     def __init__(self, audiopath):
         super().__init__(audiopath)
-        self.frequencies, self.psd = self.calculate_psd()
-        self.noise = self.calculate_noise(self.psd)
+        #self.frequencies, self.psd = self.calculate_psd()
+        #self.noise = self.calculate_noise(self.psd)
         
-
-
-    #Calculates the psd to be used at the Wiener filter calculus
-    def calculate_psd(self):
-        frequencies, psd = welch(self.transformed_data.real, fs=self.audio_file.getframerate())
-        return frequencies, psd
-
-    #nsd -> noise spectral density
-    def calculate_nsd(self):
-        frequencies, noise_psd = signal.periodogram(self.transformed_data.real, fs=self.audio_file.getframerate())
-        return noise_psd
-
-
-    def calculate_noise(self, noise_psd, threshold=0.15):
-        '''
-        The threshols choosen was 0.15. This may require adjustments deppending on 
-        your audio file
-        '''
-        noise = np.where(noise_psd > threshold * np.max(noise_psd))[0]
-        return noise
-    
-        
-
-    def wiener_filter(self):
-        wiener_filter = self.psd / (self.psd + self.noise) #Wiener filter calculus
-
-        filtered_data = self.transformed_data * wiener_filter #applying the filter
-        denoised_signal = ifft(filtered_data) #invese fourier transform
-        return denoised_signal
+    # Scipy has a better way to calculate Wiener Filter
     
     
 
