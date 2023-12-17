@@ -49,22 +49,21 @@ class data_denoise():
         decomposing the signal, filtering and reconstructing it.
 
         Parameters:
-        - threshold: signal intensity filtering threshold; atenuates lower intensity signal bits
+                    threshold: signal intensity filtering threshold; atenuates lower intensity signal bits
         over wavelet's transform time windows, highlighting peak values.
 
-        - wavelet: sets which wavelet is used to decompose the signal (wavelet standard used if none are provided: 'db1').
+                    wavelet: sets which wavelet is used to decompose the signal (wavelet standard used if none are provided: 'db1').
         Different wavelets can be used in signal decomposition and the PyWavelets package docs wields
         more information on all the wavelets available and its respective string codes (type pywt.wavelist or check https://pywavelets.readthedocs.io/en/latest/ref/wavelets.html).
 
-        - mode: reffers to the extrapolation mathematical tool for signal extension (standard: 'sym', short term for symmetric)
+                    mode: reffers to the extrapolation mathematical tool for signal extension (standard: 'sym', short term for symmetric)
         Different extrapolations can perform different kinds of artifacts in the ends of the signal,
         see PyWavelt documentation for more information (https://pywavelets.readthedocs.io/en/latest/ref/signal-extension-modes.html#ref-modes).
 
-        - level: reffers to the level of the multilevel transform, if none are provided it is calculated using dwt_max_level.
+                    level: reffers to the level of the multilevel transform, if none are provided it is calculated using dwt_max_level.
 
         Returns: 
-
-        - self.denoised_signal: after the signal in decomposed and filtered, it is reconstructed to a denoised version.
+                self.denoised_signal: after the signal in decomposed and filtered, it is reconstructed to a denoised version.
         
         (check PyWavelets Multilevel DWT docs)
         '''
@@ -104,14 +103,22 @@ class data_denoise():
         '''
 
         self.transform = 'fourier_'
-        transformed_signal = fft(self.y) # Performs FFT on the original signal
+        transformed_signal = fft(self.y) #dtype = complex64
+        filter_data = wiener(transformed_signal)
+        filtered_signal = filter_data * transformed_signal #dtype = complex128
+        real_filtered_signal = np.real(filtered_signal) #dtype = float64
+        self.denoised_signal = ifft(real_filtered_signal)
+        self.denoised_signal = np.float32(self.denoised_signal)
+        
 
+        '''
         abs_t_sig = abs(transformed_signal) # Gets absolute values of frequency amplitudes
         filtered_data = wiener(abs_t_sig) # Performs a Wiener filter on the absolute values
         filtering_weights = filtered_data / abs_t_sig # Gets the weights applied to each floating point on the wiener filter
         filtered_signal = filtering_weights*transformed_signal # Applies the weights on the complex amplitudes
         denoised_abs_signal = abs(ifft(filtered_signal)) # Performs and IFFT on the filtered signal, which returns complex values
         #                                                  due to approximations and filtering made before, and extract it's absolute values
+        
 
         y = self.y      # Necessary lines to make the calculations to retrieve information on the signs of
                         # the amplitude values of the original signal.
@@ -123,6 +130,7 @@ class data_denoise():
         
         self.denoised_signal = np.float32(self.denoised_signal) # Formmating the denoised signal to float32 dtype for compatilibity with the
                                                                 # audio_write function.
+        '''
 
     def plot_denoising(self, comp=True, sep=False):
         '''
@@ -226,6 +234,8 @@ class audio_denoise(data_denoise):
 if __name__ == "__main__":
     audio_file = 'noisy-sample-1.wav'
     denoising = audio_denoise(audio_file)
+    print(denoising.y.dtype)
+    
 
     denoising.fourier_transform()
     denoising.audio_write()
