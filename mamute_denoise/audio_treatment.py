@@ -26,17 +26,17 @@ class data_denoise():
         '''
 
         self.y = np.array(y_data).astype(float)
+
         if type(x_data) != bool:
             self.time = np.array(x_data).astype(float)
         else:
             self.time = np.arange(0, len(self.y))
+
         self.sr = (len(self.y)/self.time[-1])
-        # Start denoised signal variable
-        self.denoised_signal = self.y
-        # Start the used transform name to name the output file later on
-        self.transform = 'none_'
-        # Start file name in case of usage of the audio_write func
-        self.file_name = 'data'
+        self.denoised_signal = self.y # Start denoised signal variable
+        self.transform = 'none_' # Start the used transform name to name the output file later on
+        self.file_name = 'data' # Start file name in case of usage of the audio_write func
+
         # If a noise file path is provided, save its floating points to a noise variable (applies to noise_reduce() function)
         if type(noise_data) != bool:
             self.noise = np.array(noise_data).astype(float)
@@ -56,12 +56,9 @@ class data_denoise():
         '''
 
         coeffs = pywt.wavedec(self.y, wavelet, mode=mode, level=level)
-        # Set a threshold to nullify smaller coefficients assumed to be noise
-        coeffs_thresholded = [pywt.threshold(c, threshold, mode='soft') for c in coeffs]
-        # Reconstruct the signal from the thresholded coefficients
-        self.denoised_signal = pywt.waverec(coeffs_thresholded, 'db1')
-        # Used transform identifier
-        self.transform = 'wavelet_'
+        coeffs_thresholded = [pywt.threshold(c, threshold, mode='soft') for c in coeffs] # Set a threshold to nullify smaller coefficients assumed to be noise
+        self.denoised_signal = pywt.waverec(coeffs_thresholded, 'db1') # Reconstruct the signal from the thresholded coefficients
+        self.transform = 'wavelet_' # Used transform identifier
 
      
     def noise_reduce(self):
@@ -96,6 +93,50 @@ class data_denoise():
         transformed_signal = fft(self.y)
         filtered_data = wiener(transformed_signal)
         denoised_data = ifft(filtered_data)
+
+    """
+    #TODO: test it
+    def plot_denoising(self, comp=True, sep=False):
+        '''
+        Plots three figures: one with the comparassion of original and denoised data, the other
+        only with the original data and the last one with the denoised data.
+
+        Parameters: comp: bool
+                    sep: bool
+
+        Returns:
+            Figures
+        '''    
+        
+    
+        plt.figure(figsize=(10, 6))
+        
+        if comp:
+            plt.plot(self.time, self.y, label='Original')
+            plt.plot(self.time, self.denoised_signal, label='Denoised')
+            plt.title('Comparassion between original signal and denoised signal ' + self.file_name)
+            plt.xlabel('Time')
+            plt.ylabel('Amplitude')
+            plt.legend()
+            plt.show()
+        
+        if sep:
+            plt.figure(figsize=(10, 6))
+            plt.plot(self.time, self.y, label='Original')
+            plt.title('Original signal of ' + self.file_name)
+            plt.xlabel('Time')
+            plt.ylabel('Amplitude')
+            plt.legend()
+            plt.show()
+
+            plt.figure(figsize=(10, 6))
+            plt.plot(self.time, self.denoised_signal, label='Denoised')
+            plt.title('Denoised signal of ' + self.file_name)
+            plt.xlabel('Time')
+            plt.ylabel('Amplitude')
+            plt.legend()
+            plt.show()
+    """
 
 
 
