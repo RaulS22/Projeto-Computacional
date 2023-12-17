@@ -90,11 +90,12 @@ class data_denoise():
                  Denoised data as the result of the fft, filtering and ifft process
         '''
 
+        self.transform = 'fourier_'
         transformed_signal = fft(self.y)
         filtered_data = wiener(transformed_signal)
-        denoised_data = ifft(filtered_data)
+        self.denoised_signal = ifft(filtered_data)
 
-    """
+    
     #TODO: test it
     def plot_denoising(self, comp=True, sep=False):
         '''
@@ -102,7 +103,9 @@ class data_denoise():
         only with the original data and the last one with the denoised data.
 
         Parameters: comp: bool
+                        If  comp == True, the comparassion image will be ploted
                     sep: bool
+                        If  comp == True, both the original and the denoised image will be ploted
 
         Returns:
             Figures
@@ -136,7 +139,7 @@ class data_denoise():
             plt.ylabel('Amplitude')
             plt.legend()
             plt.show()
-    """
+    
 
 
 

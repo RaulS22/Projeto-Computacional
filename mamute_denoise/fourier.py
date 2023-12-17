@@ -10,9 +10,7 @@ class audio:
 
     def __init__(self, audiopath):
         '''
-        A inicialização do código consiste em definir o caminho do áudio,
-        gerar um nome usando manipulação de strings, abrir o arquivo de áudio
-        e chamar a transformada de Fourier
+        Checks if a string was given. If don't, it will raise an error.
         '''
         if isinstance(audiopath, str):
             self.audiopath = audiopath #audio path
