@@ -102,14 +102,27 @@ class data_denoise():
                  Denoised data as the result of the fft, filtering and ifft process
         '''
 
+        
         self.transform = 'fourier_'
         transformed_signal = fft(self.y) #dtype = complex64
-        filter_data = wiener(transformed_signal)
-        filtered_signal = filter_data * transformed_signal #dtype = complex128
-        real_filtered_signal = np.real(filtered_signal) #dtype = float64
-        self.denoised_signal = ifft(real_filtered_signal)
+        abs_transformed_signal = abs(transformed_signal) #dtype = float32
+        filtered_signal = wiener(abs_transformed_signal) #dtype = float64
+        filtering_weights = filtered_signal / abs_transformed_signal
+        filtered_signal = filtering_weights*transformed_signal
+        denoised_abs_signal = abs(ifft(filtered_signal))
+        
+
+        #real_filtered_signal = np.real(filtered_signal) #dtype = float64
+        #self.denoised_signal = ifft(real_filtered_signal)
+
+        y = self.y
+        y[y == 0] = 1 #avoids 0/0
+        amplitude_signs = y / abs(self.y)
+
+        self.denoised_signal = denoised_abs_signal * amplitude_signs
         self.denoised_signal = np.float32(self.denoised_signal)
         
+
 
         
 
