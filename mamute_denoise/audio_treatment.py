@@ -111,26 +111,7 @@ class data_denoise():
         self.denoised_signal = np.float32(self.denoised_signal)
         
 
-        '''
-        abs_t_sig = abs(transformed_signal) # Gets absolute values of frequency amplitudes
-        filtered_data = wiener(abs_t_sig) # Performs a Wiener filter on the absolute values
-        filtering_weights = filtered_data / abs_t_sig # Gets the weights applied to each floating point on the wiener filter
-        filtered_signal = filtering_weights*transformed_signal # Applies the weights on the complex amplitudes
-        denoised_abs_signal = abs(ifft(filtered_signal)) # Performs and IFFT on the filtered signal, which returns complex values
-        #                                                  due to approximations and filtering made before, and extract it's absolute values
         
-
-        y = self.y      # Necessary lines to make the calculations to retrieve information on the signs of
-                        # the amplitude values of the original signal.
-        y[y == 0] = 1   # Getting rid of possible 0/0 indeterminations 
-        amplitude_signs = y / abs(self.y) # Retrieving the amplitude signs
-
-        self.denoised_signal = denoised_abs_signal*amplitude_signs # Applying respective positive and negative signs on the filtered signal's
-                                                                   # complex "floating" points absolute values to retrieve oscilations
-        
-        self.denoised_signal = np.float32(self.denoised_signal) # Formmating the denoised signal to float32 dtype for compatilibity with the
-                                                                # audio_write function.
-        '''
 
     def plot_denoising(self, comp=True, sep=False):
         '''
@@ -234,7 +215,7 @@ class audio_denoise(data_denoise):
 if __name__ == "__main__":
     audio_file = 'noisy-sample-1.wav'
     denoising = audio_denoise(audio_file)
-    print(denoising.y.dtype)
+    #print(denoising.y.dtype)
     
 
     denoising.fourier_transform()
