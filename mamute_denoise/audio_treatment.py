@@ -264,6 +264,15 @@ def overlay_wav_files(audio1_file, audio2_file, overlayed_file='overlayed.wav'):
     # Export the result to a new file
     overlay_sound.export(overlayed_file, format="wav")
 
+    """
+    If this part returns something like:
+    RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+    warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+
+    It may be useful to do the following comands:
+    pip install ffmpeg-downloader
+    ffdl install --add-path
+    """
 
 
 if __name__ == "__main__":

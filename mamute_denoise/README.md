@@ -10,7 +10,7 @@ $ pip install mamute_denoise
 
 ## Usage
 
-- TODO
+- This code can be usefull either to denoise data and audio or to overwrite them. Details can be seen in the file example.ipynb and an example of the usage can be seen in the file presentation.ipyjb.
 
 ## Contributing
 
