@@ -285,9 +285,12 @@ if __name__ == "__main__":
     overlayed_file = "overlayed_test.wav"
 
     overlay_wav_files(audio1_file, audio2_file, overlayed_file)
-    
 
     denoising.fourier_transform()
     denoising.audio_write()
+
+    denoising.noise_reduce()
+    denoising.audio_write()
+    
 
 
