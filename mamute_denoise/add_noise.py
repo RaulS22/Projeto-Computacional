@@ -1,7 +1,20 @@
 from pydub import AudioSegment
 
 
-def overlay_wav_files(audio1_file, audio2_file, overlayed_file):
+def overlay_wav_files(audio1_file, audio2_file, overlayed_file='overlayed.wav'):
+    '''
+    Parameters:
+                audio1_file: string
+                    The name os the 1st audiofile
+                audio2_file: string
+                    The name os the 2nd audiofile
+                overlayed_file: string
+                    The name of the overlayed audiofile. If none is provided, "overlayed.wav" will be the name.
+    Returns:
+            .wav file
+    '''
+
+
     # Load the audio files
     sound1 = AudioSegment.from_file(audio1_file)
     sound2 = AudioSegment.from_file(audio2_file)
